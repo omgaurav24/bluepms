@@ -24,13 +24,15 @@ export default function TopBar() {
           >
             <Building2 className="h-5 w-5 text-blue-700" strokeWidth={2} />
           </div>
-          <span className="font-semibold text-gray-900 text-base">BLUEPMS</span>
+          <span className="font-extrabold text-gray-900 text-base">
+            BLUEPMS
+          </span>
         </div>
 
         {/* Right: nav links */}
         <div className="flex items-center gap-6 text-sm font-medium text-gray-800">
           <a href="#about" className="hover:text-blue-700 transition-colors">
-            About Us
+            About
           </a>
           <a
             href="https://wa.me/14258940847?text=Hi!%20I'm%20interested%20in%20BLUEPMS."
@@ -38,7 +40,7 @@ export default function TopBar() {
             rel="noopener noreferrer"
             className="hover:text-blue-700 transition-colors"
           >
-            WhatsApp
+            Contact
           </a>
         </div>
       </nav>

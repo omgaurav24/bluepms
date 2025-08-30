@@ -92,7 +92,26 @@ export default function ChooseBluepms() {
       </motion.h2>
 
       {/* Row list */}
-      <div className="mt-10 divide-y divide-neutral-200 rounded-3xl bg-white/60 backdrop-blur-2xl border border-white/40 shadow-[0_10px_40px_rgba(31,38,135,0.10)]">
+      <div
+        className="
+    relative mt-10 rounded-3xl overflow-hidden
+    border border-white/40 bg-white/10 backdrop-blur-2xl
+    shadow-[0_10px_40px_rgba(31,38,135,0.10)]
+    divide-y divide-white/20
+  "
+      >
+        {/* animated 'caustics' overlay that lets the plasma feel like it's moving under glass */}
+        <div
+          aria-hidden
+          className="
+      pointer-events-none absolute inset-0 opacity-70 mix-blend-soft-light
+      animate-[aurora_60s_linear_infinite]
+      [background-image:radial-gradient(40%_30%_at_20%_20%,rgba(255,255,255,0.45),transparent_60%),radial-gradient(35%_25%_at_80%_60%,rgba(96,165,250,0.35),transparent_60%)]
+      [background-size:160%_160%,180%_180%]
+      [background-position:0%_50%,100%_50%]
+    "
+        />
+        {/* keep your mapped rows below exactly as-is */}
         {rows.map((r, i) => {
           const Icon = r.icon;
           const variants = i % 2 === 0 ? rowLeft : rowRight;
@@ -103,11 +122,16 @@ export default function ChooseBluepms() {
               initial="hidden"
               whileInView="show"
               viewport={{ once: true, amount: 0.35 }}
-              className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 px-5 md:px-7 py-6"
+              className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6 px-5 md:px-7 py-6
+                   bg-white/5" // a hint of fill so dividers read nicely
             >
-              {/* left: glass icon + title */}
               <div className="flex items-center gap-4 min-w-0">
-                <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_12px_30px_rgba(31,38,135,0.12)]">
+                {/* icon capsule → glassy too */}
+                <div
+                  className="relative flex h-12 w-12 items-center justify-center rounded-2xl
+                          bg-white/30 backdrop-blur-xl border border-white/60
+                          shadow-[0_12px_30px_rgba(31,38,135,0.12)]"
+                >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/60 to-transparent" />
                   <Icon
                     className="relative h-6 w-6 text-blue-600"
@@ -119,8 +143,7 @@ export default function ChooseBluepms() {
                 </div>
               </div>
 
-              {/* right: tagline */}
-              <div className="text-gray-600 text-base md:text-lg leading-relaxed md:max-w-3xl">
+              <div className="text-gray-700 text-base md:text-lg leading-relaxed md:max-w-3xl">
                 {r.tagline}
               </div>
             </motion.div>
@@ -134,47 +157,59 @@ export default function ChooseBluepms() {
         <nav
           aria-label="Footer"
           className="
-            inline-flex overflow-hidden rounded-full
-            bg-white/30 backdrop-blur-2xl border border-white/40
-            shadow-[0_8px_28px_rgba(31,38,135,0.15)]
-            text-sm text-gray-700
-          "
+    relative inline-flex items-center overflow-hidden rounded-full
+    border border-white/40 bg-white/10 backdrop-blur-2xl
+    shadow-[0_8px_28px_rgba(31,38,135,0.15)]
+    text-sm text-gray-900 whitespace-nowrap
+  "
         >
-          {/* Segment 1: copyright */}
-          <span className="px-4 py-2 bg-white/40">
+          {/* same liquid-glass caustics as rows */}
+          <span
+            aria-hidden
+            className="
+      pointer-events-none absolute inset-0 opacity-70 mix-blend-soft-light
+      animate-[aurora_60s_linear_infinite]
+      [background-image:radial-gradient(40%_30%_at_20%_20%,rgba(255,255,255,0.45),transparent_60%),radial-gradient(35%_25%_at_80%_60%,rgba(96,165,250,0.35),transparent_60%)]
+      [background-size:160%_160%,180%_180%]
+      [background-position:0%_50%,100%_50%]
+    "
+          />
+
+          {/* optional subtle gloss */}
+          <span
+            aria-hidden
+            className="
+      pointer-events-none absolute inset-0 rounded-[inherit]
+      bg-gradient-to-b from-white/40 via-transparent to-transparent
+      [mask-image:radial-gradient(140%_80%_at_50%_-20%,#000_25%,transparent_60%)]
+      opacity-60
+    "
+          />
+
+          {/* single continuous pill — no per-item backgrounds, no dividers */}
+          <span className="px-4 py-2">
             © 2025 <span className="font-semibold">BLUEPMS</span>
           </span>
 
-          {/* Segment divider (hairline) */}
-
-          <span className="w-px bg-white/50" aria-hidden />
-
-          {/* Segment 2: contact */}
           <a
             href="#contact"
-            className="px-4 py-2 hover:bg-white/45 transition-colors"
+            className="px-4 py-2 hover:bg-white/10 transition-colors"
           >
             All rights reserved
           </a>
-          {/* Segment divider (hairline) */}
-          <span className="w-px bg-white/50" aria-hidden />
 
-          {/* Segment 2: contact */}
           <a
             href="https://wa.me/14258940847?text=Hi!%20I'm%20interested%20in%20BLUEPMS."
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 hover:bg-white/45 transition-colors"
+            className="px-4 py-2 hover:bg-white/10 transition-colors"
           >
             Contact Us
           </a>
 
-          <span className="w-px bg-white/50" aria-hidden />
-
-          {/* Segment 3: privacy */}
           <a
             href="#privacy"
-            className="px-4 py-2 hover:bg-white/45 transition-colors"
+            className="px-4 py-2 hover:bg-white/10 transition-colors"
           >
             Privacy Policy
           </a>

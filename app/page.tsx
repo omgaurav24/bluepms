@@ -1,22 +1,24 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { AuroraBackground } from "@/components/ui/aurora-background";
+import { BackgroundGradientAnimation } from "@/components/ui/aurora-background";
 import { Button } from "@/components/ui/button";
 import WhyBluepms from "@/app/WhyBluepms";
 import KeyAdvantages from "@/app/KeyAdvantages";
 import ComprehensiveModules from "@/app/ComprehensiveModules";
 import ChooseBluepms from "./ChooseBluepms";
-import TopBar from "@/app/TopBar"; // ⬅️ import topbar
+import TopBar from "@/app/TopBar";
 
 export default function Home() {
   const goToFeatures = () =>
     document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
 
   return (
-    <AuroraBackground className="h-screen w-full overflow-y-auto scroll-smooth snap-y snap-mandatory overscroll-y-contain">
-      <section className="h-screen snap-start snap-always flex flex-col items-center justify-center text-center px-6">
+    <BackgroundGradientAnimation className="h-screen w-full overflow-y-auto scroll-smooth snap-y snap-mandatory overscroll-y-contain">
+      {/* TITLE PAGE */}
+      <section className="h-screen snap-start flex flex-col items-center justify-center text-center px-6">
         <TopBar />
+
         <motion.h1
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -47,12 +49,15 @@ export default function Home() {
             onClick={goToFeatures}
             variant="ghost"
             className="
-                relative h-auto rounded-full px-10 py-4 text-lg font-semibold
-                bg-white/20 backdrop-blur-xl border border-white/30
-                shadow-[0_8px_32px_rgba(31,38,135,0.25)]
-                text-blue-700 hover:text-blue-800
-                hover:bg-white/30 transition
-              "
+              relative h-auto rounded-full px-10 py-4 text-lg font-semibold
+              bg-white/20 backdrop-blur-xl border border-white/30
+              text-blue-700 hover:text-blue-800 hover:bg-white/30
+              shadow-[0_8px_32px_rgba(31,38,135,0.25)]
+              transform-gpu will-change-transform
+              transition-transform duration-300 ease-out
+              hover:scale-[1.06] active:scale-[0.98]
+              focus-visible:scale-[1.03] focus-visible:outline-none
+            "
           >
             Explore Features
           </Button>
@@ -60,27 +65,24 @@ export default function Home() {
       </section>
 
       {/* WHY PAGE */}
-      <section
-        id="features"
-        className="h-screen snap-start snap-always flex items-center"
-      >
+      <section id="features" className="h-screen snap-start flex items-center">
         <WhyBluepms />
       </section>
 
       {/* KEY ADVANTAGES PAGE */}
-      <section className="h-screen snap-start snap-always flex items-center">
+      <section className="h-screen snap-start flex items-center">
         <KeyAdvantages />
       </section>
 
       {/* COMPREHENSIVE MODULES PAGE */}
-      <section className="h-screen snap-start snap-always flex items-center">
+      <section className="h-screen snap-start flex items-center">
         <ComprehensiveModules />
       </section>
 
       {/* CHOOSE BLUEPMS PAGE */}
-      <section className="h-screen snap-start snap-always flex items-center">
+      <section className="h-screen snap-start flex items-center">
         <ChooseBluepms />
       </section>
-    </AuroraBackground>
+    </BackgroundGradientAnimation>
   );
 }

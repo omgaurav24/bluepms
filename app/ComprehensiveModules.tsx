@@ -150,12 +150,20 @@ export default function ComprehensiveModules() {
           <motion.li
             key={title}
             variants={cardItem}
-            className={`${glassCard} p-6`}
+            whileHover={{ scale: 1.06 }} // grow on hover
+            whileTap={{ scale: 0.98 }} // compress on press/click
+            transition={{
+              type: "spring",
+              stiffness: 320,
+              damping: 24,
+              mass: 0.6,
+            }}
+            className={`${glassCard} p-6 will-change-transform`}
           >
             {/* icon */}
             <div className="mb-5">
               <div className={glassIconWrap}>
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/60 to-transparent opacity-60" />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/60 to-transparent opacity-60 " />
                 <div className="absolute inset-0 rounded-full border border-white/50" />
                 <Icon
                   className="relative h-7 w-7 text-blue-700"
@@ -190,7 +198,15 @@ export default function ComprehensiveModules() {
           <motion.li
             key={title}
             variants={cardItem}
-            className={`${glassCard} p-6`}
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{
+              type: "spring",
+              stiffness: 320,
+              damping: 24,
+              mass: 0.6,
+            }}
+            className={`${glassCard} p-6 will-change-transform`}
           >
             {/* icon */}
             <div className="mb-5">

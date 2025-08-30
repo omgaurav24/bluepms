@@ -97,24 +97,44 @@ export default function KeyAdvantages() {
         {advantages.map(({ icon: Icon, title, desc }) => (
           <motion.li
             key={title}
-            variants={item}
-            className="flex items-start space-x-4"
+            variants={item} // keeps your in-view spring
+            // snappy hover/press just for transforms
+            whileHover={{
+              scale: 1.04,
+              y: -2,
+              transition: { duration: 0.12, ease: "easeOut" },
+            }}
+            whileTap={{
+              scale: 0.985,
+              y: 0,
+              transition: { duration: 0.08, ease: "easeOut" },
+            }}
+            className="
+    group relative flex items-start gap-4
+    rounded-2xl px-4 py-3 -mx-2
+    hover:bg-white/10 hover:backdrop-blur-xl hover:border hover:border-white/30
+    hover:shadow-[0_12px_36px_rgba(31,38,135,0.18)]
+    will-change-transform transform-gpu
+    transition-[background-color,box-shadow,backdrop-filter,border-color] duration-150 ease-out
+  "
           >
             {/* liquid glass icon */}
             <div className="flex-shrink-0 mt-1">
               <div
                 className="
-                  relative flex h-12 w-12 items-center justify-center
-                  rounded-full bg-white/20 backdrop-blur-xl
-                  border border-white/30 shadow-[0_8px_24px_rgba(31,38,135,0.18)]
-                  overflow-hidden
-                "
+        relative flex h-12 w-12 items-center justify-center rounded-full
+        bg-white/20 backdrop-blur-xl border border-white/30
+        shadow-[0_8px_24px_rgba(31,38,135,0.18)] overflow-hidden
+        transform-gpu
+        transition-[transform,box-shadow,background-color] duration-150 ease-out
+        group-hover:scale-110 group-hover:bg-white/30
+        group-hover:shadow-[0_12px_32px_rgba(31,38,135,0.24)]
+      "
               >
-                {/* glossy gradient overlay */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/40 to-transparent opacity-60" />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/50 to-transparent opacity-60" />
                 <div className="absolute inset-0 rounded-full border border-white/50" />
                 <Icon
-                  className="relative h-6 w-6 text-blue-600 drop-shadow"
+                  className="relative h-6 w-6 text-blue-600 transition-colors duration-150 ease-out group-hover:text-blue-700"
                   strokeWidth={2}
                 />
               </div>
