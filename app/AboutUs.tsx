@@ -69,8 +69,8 @@ const CARDS: CardItem[] = [
     title: "Comprehensive suite",
     render: () => (
       <>
-        A comprehensive suite covers Front Office, Point of Sale, Housekeeping,
-        Accounts Receivables, F&amp;B Costing, and Purchase &amp; Inventory for
+        Our suite covers Front Office, Point of Sale, Housekeeping,
+        Accounts Receivables, F&amp;B, and Purchase &amp; Inventory for
         unified oversight.
       </>
     ),

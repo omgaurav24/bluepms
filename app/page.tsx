@@ -28,8 +28,7 @@ export default function Home() {
   return (
     <BackgroundGradientAnimation className="h-screen w-full overflow-y-auto scroll-smooth snap-y snap-mandatory overscroll-y-contain">
       {/* HERO */}
-      <section className="h-screen snap-start flex flex-col items-center justify-center text-center px-6">
-        {/* ↑ lift the whole hero content more */}
+      <section className="h-screen snap-start snap-always flex flex-col items-center justify-center text-center px-6">
         <div className="w-full flex flex-col items-center transform-gpu -translate-y-12 md:-translate-y-20 lg:-translate-y-24">
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
@@ -65,7 +64,7 @@ export default function Home() {
               className="
                 relative h-auto rounded-full px-10 py-4 text-lg font-semibold
                 bg-white/20 backdrop-blur-xl border border-white/30
-                text-blue-700 hover:text-blue-800 hover:bg-white/30
+                hover: hover:bg-white/30
                 shadow-[0_8px_32px_rgba(31,38,135,0.25)]
                 transform-gpu will-change-transform
                 transition-transform duration-300 ease-out
@@ -82,7 +81,7 @@ export default function Home() {
               className="
                 relative h-auto rounded-full px-10 py-4 text-lg font-semibold
                 bg-white/20 backdrop-blur-xl border border-white/30
-                text-blue-700 hover:text-blue-800 hover:bg-white/30
+                hover: hover:bg-white/30
                 shadow-[0_8px_32px_rgba(31,38,135,0.25)]
                 transform-gpu will-change-transform
                 transition-transform duration-300 ease-out
@@ -94,7 +93,7 @@ export default function Home() {
             </Button>
           </motion.div>
 
-          {/* New subheadline under the buttons */}
+          {/* Subheadline */}
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -125,22 +124,22 @@ export default function Home() {
       </section>
 
       {/* WHY PAGE */}
-      <section id="features" className="h-screen snap-start flex items-center">
+      <section id="features" className="h-screen snap-start snap-always flex items-center">
         <WhyBluepms />
       </section>
 
       {/* KEY ADVANTAGES PAGE */}
-      <section className="h-screen snap-start flex items-center">
+      <section className="h-screen snap-start snap-always flex items-center">
         <KeyAdvantages />
       </section>
 
       {/* COMPREHENSIVE MODULES PAGE */}
-      <section className="h-screen snap-start flex items-center">
+      <section className="h-screen snap-start snap-always flex items-center">
         <ComprehensiveModules />
       </section>
 
       {/* CHOOSE BLUEPMS PAGE */}
-      <section className="h-screen snap-start flex items-center" id="contact">
+      <section className="h-screen snap-start snap-always flex items-center" id="contact">
         <ChooseBluepms />
       </section>
     </BackgroundGradientAnimation>
