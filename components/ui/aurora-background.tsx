@@ -18,7 +18,7 @@ export const BackgroundGradientAnimation = ({
         <div className="absolute inset-0 bg-white" />
         <Plasma
           color="#EAF3FF"
-          speed={2.1}
+          speed={2.2}
           direction="forward"
           scale={2.5}
           opacity={1}
