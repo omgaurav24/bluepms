@@ -3,14 +3,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* ✅ global keyframes (outside @theme) */
-
-/* (Optional) still fine to keep your theme vars here */
-@theme inline {
-  --animate-aurora: aurora 60s linear infinite;
-}
-
-/* Slow pan for the background gradient (makes the base move gently) */
 
 /* Plasma.css */
 .plasma-container {

@@ -5,16 +5,16 @@ import React, { useEffect, useRef } from "react";
 import { Renderer, Program, Mesh, Triangle } from "ogl";
 
 interface PlasmaProps {
-  color?: string; // still used: tint source (kept for compatibility)
+  color?: string;
   speed?: number;
   direction?: "forward" | "reverse" | "pingpong";
   scale?: number;
-  opacity?: number; // overall strength
-  mouseInteractive?: boolean; // unused
-  quality?: number; // 0.6–1.0 DPR scaler (perf)
-  paletteColors?: string[]; // 2..6 colors (hex) to blend
-  paletteStrength?: number; // 0..1, how much to use the palette over original plasma
-  minAlpha?: number; // 0..1, lift alpha in dark zones to “cover the page”
+  opacity?: number;
+  mouseInteractive?: boolean;
+  quality?: number;
+  paletteColors?: string[];
+  paletteStrength?: number;
+  minAlpha?: number;
 }
 
 const hexToRgb = (hex: string): [number, number, number] => {
@@ -38,7 +38,7 @@ void main() {
 }
 `;
 
-// Plasma + multi-blue palette; alpha from brightness with a floor (minAlpha)
+/* ===== Fragment: lateral drift + enhanced gradient blending ===== */
 const fragment = `#version 300 es
 precision highp float;
 uniform vec2  iResolution;
@@ -49,12 +49,11 @@ uniform float uSpeed;
 uniform float uDirection;
 uniform float uScale;
 uniform float uOpacity;
-uniform float uIter;         // 48–60
-uniform int   uPCount;       // number of palette stops (2..6)
-uniform float uPalStrength;  // 0..1
-uniform float uMinAlpha;     // 0..1
+uniform float uIter;
+uniform int   uPCount;
+uniform float uPalStrength;
+uniform float uMinAlpha;
 
-// Up to 6 stops (we fill unused with last)
 uniform vec3 uP0;
 uniform vec3 uP1;
 uniform vec3 uP2;
@@ -64,8 +63,7 @@ uniform vec3 uP5;
 
 out vec4 fragColor;
 
-vec3 samplePalette(float t) {
-  // Build a local array from uniforms (GLSL ES 3.0 allows this)
+vec3 samplePaletteLinear(float t) {
   vec3 P[6];
   P[0] = uP0; P[1] = uP1; P[2] = uP2; P[3] = uP3; P[4] = uP4; P[5] = uP5;
 
@@ -74,23 +72,49 @@ vec3 samplePalette(float t) {
   int idx = int(floor(segF));
   idx = clamp(idx, 0, count - 2);
   float f = fract(segF);
-  return mix(P[idx], P[idx + 1], f);
+  float fe = f * f * (3.0 - 2.0 * f);
+  return mix(P[idx], P[idx + 1], fe);
+}
+
+// 5-tap smoothing around t, width 'w' (center-weighted)
+vec3 samplePaletteSmooth(float t, float w) {
+  float t0 = clamp(t - 2.0 * w, 0.0, 1.0);
+  float t1 = clamp(t - 1.0 * w, 0.0, 1.0);
+  float t2 = clamp(t,              0.0, 1.0);
+  float t3 = clamp(t + 1.0 * w, 0.0, 1.0);
+  float t4 = clamp(t + 2.0 * w, 0.0, 1.0);
+
+  vec3 c0 = samplePaletteLinear(t0);
+  vec3 c1 = samplePaletteLinear(t1);
+  vec3 c2 = samplePaletteLinear(t2);
+  vec3 c3 = samplePaletteLinear(t3);
+  vec3 c4 = samplePaletteLinear(t4);
+
+  return (c0 + 2.0*c1 + 4.0*c2 + 2.0*c3 + c4) / 10.0;
 }
 
 void mainImage(out vec4 o, vec2 C) {
-  vec2 center = iResolution.xy * 0.5;
+  vec2 r = iResolution.xy;
+
+  float globalDrift = sin(iTime * 0.6) * (0.25 * r.x);
+  float ripple      = sin((C.y / r.y) * 8.0 + iTime * 1.3) * (0.015 * r.x);
+  C.x += globalDrift + ripple;
+  
+  vec2 center = r * 0.5 + vec2(sin(iTime * 0.7) * 0.30 * r.x, 0.0);
   C = (C - center) / uScale + center;
+
   float i = 0.0, d, z, T = iTime * uSpeed * uDirection;
   vec3 O = vec3(0.0), p, S;
-  vec2 r = iResolution.xy, Q;
+  vec2 Q;
   for (; i < uIter; i += 1.0) {
     p = z * normalize(vec3(C - 0.5 * r, r.y));
     p.z -= 4.0;
     S = p;
     d = p.y - T;
-    p.x += 0.4 * (1.0 + p.y) * sin(d + p.x * 0.1) * cos(0.34 * d + p.x * 0.05);
+    p.x += 0.4 * (1.0 + p.y) * sin(d + p.x * 0.2) * cos(0.45 * d + p.x * 0.08);
     Q = p.xz *= mat2(cos(p.y + vec4(0, 11, 33, 0) - T));
-    z += d = abs(sqrt(dot(Q, Q)) - 0.25 * (5.0 + S.y)) / 3.0 + 0.0008;
+    // MODIFICATION: Made the plasma tendrils thinner to increase their apparent number
+    z += d = abs(sqrt(dot(Q, Q)) - 0.15 * (5.0 + S.y)) / 3.0 + 0.0008;
     vec4 oStep = 1.0 + sin(S.y + p.z * 0.5 + S.z - length(S - p) + vec4(2,1,0,8));
     O += oStep.w / max(d, 1e-5) * oStep.xyz;
   }
@@ -102,22 +126,35 @@ void main() {
   mainImage(o, gl_FragCoord.xy);
 
   vec3 base = o.rgb;
-
-  // Generate a stable "t" from brightness (can bias with minor gamma)
   float intensity = clamp((base.r + base.g + base.b) / 3.0, 0.0, 1.0);
-  float t = pow(intensity, 0.95); // small gamma lift for smoother bands
 
-  // Optional original single-color tint (kept for compatibility)
+  // MODIFICATION: Emphasize darker colors more by increasing the exponent
+  float tBase = pow(intensity, 1.5);
+
+  vec2 uv = gl_FragCoord.xy / iResolution.xy;
+  float darkWave =
+      0.10 * sin(uv.x * 18.0 + iTime * 0.7) +
+      0.06 * sin(uv.y * 12.0 - iTime * 0.9) +
+      0.04 * sin((uv.x + uv.y) * 22.0 + iTime * 0.6);
+
+  float tMod = clamp(tBase - (1.0 - tBase) * darkWave, 0.0, 1.0);
+
+  float x = uv.x;
+  float baseW  = clamp(fwidth(tMod) * 4.0, 0.0, 0.16);
+  float peaks  = 0.5 + 0.5 * cos(4.0 * 3.141592653589793 * x);
+  
+  // MODIFICATION: Significantly widen the blend in darker color regions
+  float darkBoost = 0.35 * (1.0 - tMod);
+  // MODIFICATION: Raised the cap on the total blend width
+  float wBoost = min(baseW + 0.08 * peaks + darkBoost, 0.40);
+
+  vec3 palColor = samplePaletteSmooth(tMod, wBoost);
   vec3 customColor = intensity * uCustomColor;
   vec3 tinted = mix(base, customColor, step(0.5, uUseCustomColor));
 
-  // Multi-stop blue palette color
-  vec3 palColor = samplePalette(t);
+  float s = clamp(uPalStrength, 0.0, 1.0);
+  vec3 finalColor = mix(tinted, palColor, s);
 
-  // Blend palette over the base/tinted plasma
-  vec3 finalColor = mix(tinted, palColor, clamp(uPalStrength, 0.0, 1.0));
-
-  // Alpha follows brightness but with a floor so page is covered
   float a = mix(uMinAlpha, 1.0, smoothstep(0.08, 0.85, intensity));
   a *= uOpacity;
 
@@ -126,14 +163,14 @@ void main() {
 `;
 
 export const Plasma: React.FC<PlasmaProps> = ({
-  color = "#3A8DFF",
-  speed = 0.8,
+  color = "#93C5FD",
+  speed = 2,
   direction = "forward",
-  scale = 1.4,
+  // MODIFICATION: Increased scale to 'zoom out', making patterns smaller and more numerous
+  scale = 1,
   opacity = 1.0,
   mouseInteractive = false,
-  quality = 0.5, // 0.8–0.9 is a sweet spot
-  // default: 6 blues from deep → light
+  quality = 0.5,
   paletteColors = [
     "#0B3C91",
     "#1D4ED8",
@@ -141,16 +178,13 @@ export const Plasma: React.FC<PlasmaProps> = ({
     "#3B82F6",
     "#60A5FA",
     "#93C5FD",
-    "#093074",
-    "#07275E",
-    "#061E48",
   ],
-  paletteStrength = 1.0, // fully use palette by default
-  minAlpha = 0.45, // ensure coverage in dark areas
+  paletteStrength = 1.0,
+  // MODIFICATION: Increased minimum alpha to prevent areas from becoming too transparent
+  minAlpha = 0.7,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // Normalize palette to 6 stops (repeat last if fewer)
   const stops = (() => {
     const arr = paletteColors.slice(0, 6);
     while (arr.length < 6) arr.push(arr[arr.length - 1] ?? "#93C5FD");
@@ -159,7 +193,6 @@ export const Plasma: React.FC<PlasmaProps> = ({
   const [p0, p1, p2, p3, p4, p5] = stops.map(hexToRgb);
   const pCount = Math.max(2, Math.min(stops.length, 6));
 
-  // Single stable dependency
   const depsKey = [
     color,
     speed,
@@ -182,16 +215,14 @@ export const Plasma: React.FC<PlasmaProps> = ({
     const renderer = new Renderer({
       webgl: 2,
       alpha: true,
-      antialias: false, // full-screen tri
-      premultipliedAlpha: false, // straight alpha
+      antialias: false,
+      premultipliedAlpha: false,
       dpr,
       powerPreference: "high-performance",
     });
     const gl = renderer.gl;
 
-    // Transparent clear — blends over host's bg (we set bg-white below)
     gl.clearColor(0, 0, 0, 0);
-
     gl.enable(gl.BLEND);
     gl.blendFuncSeparate(
       gl.SRC_ALPHA,
@@ -224,14 +255,13 @@ export const Plasma: React.FC<PlasmaProps> = ({
         iTime: { value: 0 },
         iResolution: { value: [1, 1] },
         uCustomColor: { value: hexToRgb(color) },
-        uUseCustomColor: { value: 0.0 }, // we're using the palette instead
+        uUseCustomColor: { value: 0.0 },
         uSpeed: { value: speed },
         uDirection: { value: direction === "reverse" ? -1.0 : 1.0 },
         uScale: { value: Math.max(0.0001, scale) },
         uOpacity: { value: opacity },
         uIter: { value: quality >= 0.92 ? 60 : 48 },
 
-        // palette uniforms
         uPCount: { value: pCount },
         uPalStrength: { value: paletteStrength },
         uMinAlpha: { value: Math.max(0.0, Math.min(1.0, minAlpha)) },
@@ -276,11 +306,11 @@ export const Plasma: React.FC<PlasmaProps> = ({
     };
   }, [depsKey]);
 
-  // White base so blending has a consistent substrate (but minAlpha lifts coverage)
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 w-full h-full bg-white"
+      className="absolute inset-0 w-full h-full"
+      style={{ background: "#EAF3FF" }}
       aria-hidden
     />
   );

@@ -17,10 +17,10 @@ export const BackgroundGradientAnimation = ({
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-white" />
         <Plasma
-          color="#3A8DFF"
-          speed={1}
+          color="#EAF3FF"
+          speed={2}
           direction="forward"
-          scale={1.9}
+          scale={2.5}
           opacity={1}
           quality={0.5}
           paletteColors={[
@@ -30,9 +30,6 @@ export const BackgroundGradientAnimation = ({
             "#3B82F6",
             "#60A5FA",
             "#93C5FD",
-            "#093074",
-            "#07275E",
-            "#061E48",
           ]}
           paletteStrength={1.5}
           minAlpha={0.5}
