@@ -30,6 +30,7 @@ export default function Home() {
       {/* HERO */}
       <section className="h-screen snap-start snap-always flex flex-col items-center justify-center text-center px-6">
         <div className="w-full flex flex-col items-center transform-gpu -translate-y-12 md:-translate-y-20 lg:-translate-y-24">
+          
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
@@ -38,6 +39,7 @@ export default function Home() {
           >
             BLUEPMS
           </motion.h1>
+          
 
           <motion.p
             initial={{ opacity: 0 }}

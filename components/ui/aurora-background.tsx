@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Renderer, Program, Mesh, Triangle } from "ogl";
 
 /* ──────────────────────────────────────────────────────────────
-   Minimal blue cloud-ish plasma (domain-warped FBM, blue-only)
+   Minimal blue cloud-ish plasma (domain-warped FBM) — 9-stop palette
    ────────────────────────────────────────────────────────────── */
 
 type Direction = "forward" | "reverse";
@@ -29,8 +29,8 @@ void main() {
 }
 `;
 
+/* === CHANGED: fragment uses your 9 gradient colors === */
 const fragment = `#version 300 es
-/* ... (fragment shader code remains unchanged) ... */
 precision highp float;
 
 uniform vec2  iResolution;
@@ -63,23 +63,24 @@ float fbm(vec2 p){
   return v;
 }
 
-/* 9-stop palette (dark → light) */
-vec3 bluePalette(float t){
-  vec3 c0 = vec3(0.082, 0.498, 0.714); // #157FB6
-  vec3 c1 = vec3(0.165, 0.565, 0.776); // #2A90C6
-  vec3 c2 = vec3(0.255, 0.655, 0.839); // #41A7D6
-  vec3 c3 = vec3(0.345, 0.737, 0.878); // #58BCE0
-  vec3 c4 = vec3(0.502, 0.788, 0.890); // #80C9E3
-  vec3 c5 = vec3(0.659, 0.863, 0.937); // #A8DCEF
-  vec3 c6 = vec3(0.800, 0.922, 0.965); // #CCEBF6
-  vec3 c7 = vec3(0.878, 0.949, 0.969); // #E0F2F7
-  vec3 c8 = vec3(0.941, 0.972, 1.000); // #F0F8FF
+/* === 9-stop palette (light → dark)
+   #D7EAF7, #A7C2E3, #82C3EC, #599FD8, #2E8ADD, #3074B3, #2077D1, #1659A2, #07519F  */
+vec3 palette9(float t){
+  vec3 c0 = vec3(0.843, 0.918, 0.969); // #D7EAF7
+  vec3 c1 = vec3(0.655, 0.761, 0.890); // #A7C2E3
+  vec3 c2 = vec3(0.510, 0.765, 0.925); // #82C3EC
+  vec3 c3 = vec3(0.349, 0.624, 0.847); // #599FD8
+  vec3 c4 = vec3(0.180, 0.541, 0.867); // #2E8ADD
+  vec3 c5 = vec3(0.188, 0.455, 0.702); // #3074B3
+  vec3 c6 = vec3(0.125, 0.467, 0.820); // #2077D1
+  vec3 c7 = vec3(0.086, 0.349, 0.635); // #1659A2
+  vec3 c8 = vec3(0.027, 0.318, 0.624); // #07519F
 
   t = clamp(t, 0.0, 1.0);
   float seg = t * 8.0;   // 8 segments across 9 stops
   float i   = floor(seg);
   float f   = fract(seg);
-  f = f*f*(3.0-2.0*f);
+  f = f*f*(3.0-2.0*f);   // smoothstep
   if (i < 1.0) return mix(c0, c1, f);
   if (i < 2.0) return mix(c1, c2, f);
   if (i < 3.0) return mix(c2, c3, f);
@@ -104,13 +105,13 @@ void main(){
   float w2 = fbm(p * (2.10 / max(uScale, 0.0001)) + vec2(w1*2.0) + vec2(t, t*0.5));
   float base = fbm(p * (3.10 / max(uScale, 0.0001)) + vec2(w2*1.6) + vec2(t*0.6, -t*0.7));
 
-  // add a gentle sweep for premium motion
+  // gentle sweep
   float sweep = 0.06 * sin(uv.x * 9.0 + t * 2.0);
   float v = clamp(base * 0.85 + w1 * 0.15 + sweep, 0.0, 1.0);
 
-  vec3 col = bluePalette(v);
+  vec3 col = palette9(v);
 
-  // subtle edge lift (still blue)
+  // subtle edge lift
   float rim = smoothstep(0.55, 0.9, base);
   col += vec3(0.03, 0.04, 0.07) * pow(rim, 5.0) * 0.18;
 
@@ -127,7 +128,6 @@ const Plasma: React.FC<PlasmaProps> = ({
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    /* ... (useEffect logic remains unchanged) ... */
     const host = ref.current;
     if (!host) return;
 
@@ -205,9 +205,7 @@ const Plasma: React.FC<PlasmaProps> = ({
       try { host.removeChild(canvas); } catch {}
     };
   }, [speed, direction, scale, opacity]);
-  
-  // CHANGED: Make this component's div a simple, flexible container
-  // that will fill its parent. This makes the component more reusable.
+
   return <div ref={ref} className="w-full h-full" aria-hidden />;
 };
 
@@ -234,54 +232,58 @@ export const BackgroundGradientAnimation = ({
         `}
       </style>
 
-      {/* CHANGED: Use the .plasma-container class for robust full-page sizing */}
       <motion.div
         initial={{ opacity: 0, y: -24, scale: 0.985 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         className="plasma-container"
       >
-        {/* Base vertical gradient with darker shades near the bottom */}
+        {/* CHANGED: Base vertical gradient using your 9 stops (light→dark) */}
         <div
-          // CHANGED: Use w-full and h-full to fill the parent container
           className="absolute inset-0 w-full h-full"
           style={{
             background:
               "linear-gradient(180deg," +
-              " #F0F8FF 0%,  #E0F2F7 12%, #CCEBF6 24%, #A8DCEF 45%," +
-              " #80C9E3 65%, #58BCE0 78%, #41A7D6 88%, #2A90C6 95%, #157FB6 100%)",
+              " #D7EAF7 0%," +   // 1
+              " #A7C2E3 12.5%,"+ // 2
+              " #82C3EC 25%," +  // 3
+              " #599FD8 37.5%,"+ // 4
+              " #2E8ADD 50%," +  // 5
+              " #3074B3 62.5%,"+ // 6
+              " #2077D1 75%," +  // 7
+              " #1659A2 87.5%,"+ // 8
+              " #07519F 100%)",  // 9
           }}
         />
 
-        {/* Moving blue caustics layers */}
+        {/* CHANGED: Moving blobs include darker tints too */}
         <div
           aria-hidden
           style={{
             position: "absolute",
-            inset: 0, // CHANGED
-            width: "100%", // CHANGED
-            height: "100%", // CHANGED
+            inset: 0,
             backgroundImage: [
-              "radial-gradient(42% 34% at 18% 22%, rgba(128,201,227,0.42), transparent 65%)", // #80C9E3
-              "radial-gradient(40% 35% at 82% 68%, rgba(88,188,224,0.35), transparent 65%)",   // #58BCE0
-              "radial-gradient(28% 24% at 50% 10%, rgba(42,144,198,0.28), transparent 70%)",   // #2A90C6
+              "radial-gradient(42% 34% at 18% 22%, rgba(215,234,247,0.55), transparent 65%)", // #D7EAF7
+              "radial-gradient(40% 35% at 82% 68%, rgba(130,195,236,0.45), transparent 65%)", // #82C3EC
+              "radial-gradient(30% 26% at 72% 30%, rgba(32,119,209,0.35),  transparent 70%)", // #2077D1
+              "radial-gradient(28% 24% at 35% 78%, rgba(22,89,162,0.30),   transparent 72%)", // #1659A2
+              "radial-gradient(36% 30% at 50% 10%, rgba(7,81,159,0.28),    transparent 70%)", // #07519F
             ].join(", "),
-            backgroundSize: "170% 170%, 170% 170%, 200% 200%",
-            backgroundPosition: "0% 50%, 100% 50%, 50% 0%",
+            backgroundSize: "170% 170%, 170% 170%, 200% 200%, 200% 200%, 220% 220%",
+            backgroundPosition: "0% 50%, 100% 50%, 50% 0%, 50% 100%, 30% 70%",
             animation: "blueGradientShift 55s linear infinite",
             mixBlendMode: "soft-light",
             opacity: 0.9,
           }}
         />
 
-        {/* Shader layer (also exact viewport span) */}
-        {/* CHANGED: This wrapper div now correctly fills the parent */}
+        {/* Shader layer — uses the same 9-stop palette */}
         <div className="absolute inset-0 w-full h-full">
           <Plasma speed={2.0} direction="forward" scale={2.0} opacity={1} />
         </div>
       </motion.div>
 
-      {/* Foreground content */}
+      {/* Foreground content (e.g., your glass text) */}
       <div className="relative z-10">{children}</div>
     </div>
   );
