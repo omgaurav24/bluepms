@@ -273,7 +273,7 @@ export const BackgroundGradientAnimation = ({
             backgroundPosition: "0% 50%, 100% 50%, 50% 0%, 50% 100%, 30% 70%",
             animation: "blueGradientShift 55s linear infinite",
             mixBlendMode: "soft-light",
-            opacity: 0.9,
+            opacity: 0.8,
           }}
         />
 

@@ -3,8 +3,9 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { BackgroundGradientAnimation } from "@/components/ui/aurora-background";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import ShinyText from "@/components/ui/ShinyText"; // ← NEW
 import WhyBluepms from "@/app/WhyBluepms";
 import KeyAdvantages from "@/app/KeyAdvantages";
 import ComprehensiveModules from "@/app/ComprehensiveModules";
@@ -13,39 +14,36 @@ import AboutUsBoxes from "@/app/AboutUs";
 
 export default function Home() {
   const [ctaShown, setCtaShown] = useState(false);
+  const router = useRouter();
 
   const goToFeatures = () =>
     document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
 
-  const goToContact = () => {
-    const el = document.getElementById("contact");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-    else if (typeof window !== "undefined") {
-      window.location.href = "mailto:hello@bluepms.com";
-    }
-  };
+  const goToContact = () => router.push("/contact");
 
   return (
-    <BackgroundGradientAnimation className="h-screen w-full overflow-y-auto scroll-smooth snap-y snap-mandatory overscroll-y-contain">
+    <div className="h-screen w-full overflow-y-auto scroll-smooth snap-y snap-mandatory overscroll-y-contain">
       {/* HERO */}
       <section className="h-screen snap-start snap-always flex flex-col items-center justify-center text-center px-6">
         <div className="w-full flex flex-col items-center transform-gpu -translate-y-12 md:-translate-y-20 lg:-translate-y-24">
-          
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="text-[clamp(3rem,8vw,6rem)] font-extrabold tracking-tight text-gray-900"
+            className="text-[clamp(3rem,8vw,6rem)] font-extrabold tracking-tight relative"
           >
-            BLUEPMS
+            {/* Base text in black */}
+            <span className="absolute inset-0 text-[#0A192F] select-none">BLUEPMS</span>
+
+            {/* Shiny overlay */}
+            <ShinyText text="BLUEPMS" speed={4} className="relative" />
           </motion.h1>
-          
 
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="mt-3 text-[clamp(1.05rem,2.5vw,1.5rem)] font-extrabold text-gray-700"
+            className="mt-3 text-[clamp(1.05rem,2.5vw,1.5rem)] font-extrabold text-black"
           >
             <span className="font-medium">AI-Driven.</span>{" "}
             <span className="font-medium">Seamless.</span>{" "}
@@ -63,16 +61,7 @@ export default function Home() {
             <Button
               onClick={goToFeatures}
               variant="ghost"
-              className="
-                relative h-auto rounded-full px-10 py-4 text-lg font-semibold
-                bg-white/20 backdrop-blur-xl border border-white/30
-                hover: hover:bg-white/30
-                shadow-[0_8px_32px_rgba(31,38,135,0.25)]
-                transform-gpu will-change-transform
-                transition-transform duration-300 ease-out
-                hover:scale-[1.06] active:scale-[0.98]
-                focus-visible:scale-[1.03] focus-visible:outline-none
-              "
+              className="relative h-auto rounded-full px-10 py-4 text-lg font-semibold bg-white/20 backdrop-blur-xl border border-white/30 hover:bg-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.25)] transform-gpu transition-transform duration-300 ease-out hover:scale-[1.06] active:scale-[0.98] focus-visible:scale-[1.03] focus-visible:outline-none"
             >
               Explore Features
             </Button>
@@ -80,18 +69,9 @@ export default function Home() {
             <Button
               onClick={goToContact}
               variant="ghost"
-              className="
-                relative h-auto rounded-full px-10 py-4 text-lg font-semibold
-                bg-white/20 backdrop-blur-xl border border-white/30
-                hover: hover:bg-white/30
-                shadow-[0_8px_32px_rgba(31,38,135,0.25)]
-                transform-gpu will-change-transform
-                transition-transform duration-300 ease-out
-                hover:scale-[1.06] active:scale-[0.98]
-                focus-visible:scale-[1.03] focus-visible:outline-none
-              "
+              className="relative h-auto rounded-full px-10 py-4 text-lg font-semibold bg-white/20 backdrop-blur-xl border border-white/30 hover:bg-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.25)] transform-gpu transition-transform duration-300 ease-out hover:scale-[1.06] active:scale-[0.98] focus-visible:scale-[1.03] focus-visible:outline-none"
             >
-              Get in Touch
+              Go LIVE NOW!
             </Button>
           </motion.div>
 
@@ -100,7 +80,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.55, ease: "easeOut" }}
-            className="mt-4 max-w-3xl text-center text-[clamp(0.95rem,1.6vw,1.15rem)] text-gray-700"
+            className="mt-4 max-w-3xl text-center text-[clamp(0.95rem,1.6vw,1.15rem)] text-black"
           >
             Transform your hospitality business with a 100% cloud-based,
             AI-integrated property and hotel management platform.
@@ -144,6 +124,6 @@ export default function Home() {
       <section className="h-screen snap-start snap-always flex items-center" id="contact">
         <ChooseBluepms />
       </section>
-    </BackgroundGradientAnimation>
+    </div>
   );
 }

@@ -1,33 +1,45 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+/* app/layout.tsx */
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { BackgroundGradientAnimation } from "@/components/ui/aurora-background";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Bluepms",
-  description: "Bluepms",
+  title: "BLUEPMS – AI-Powered Cloud Hotel Management Software",
+  description:
+    "BLUEPMS is a 100% cloud-based, AI-integrated property management system for hotels. Streamline front office, POS, housekeeping, inventory & more.",
+  keywords: [
+    "Hotel PMS",
+    "Property Management Software",
+    "AI PMS",
+    "Cloud Hotel Software",
+    "Hospitality Management System",
+  ],
+  metadataBase: new URL("https://bluepms.com"),
+  alternates: {
+    canonical: "https://bluepms.com",
+  },
+  openGraph: {
+    title: "BLUEPMS – AI-Powered Cloud Hotel Management Software",
+    description:
+      "BLUEPMS is a 100% cloud-based, AI-integrated property management system for hotels. Streamline front office, POS, housekeeping, inventory & more.",
+    url: "https://bluepms.com",
+    siteName: "BLUEPMS",
+    locale: "en_US",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body>
+        <BackgroundGradientAnimation className="min-h-screen w-full">
+          {children}
+        </BackgroundGradientAnimation>
       </body>
     </html>
   );

@@ -49,7 +49,7 @@ const CARDS: CardItem[] = [
     title: "Modern PMS platform",
     render: () => (
       <>
-        BLUEPMS is a cutting-edge property and hotel management platform built
+        A cutting-edge property and hotel management platform built
         for modern operations with reliability, speed, and intuitive control.
       </>
     ),
@@ -124,20 +124,64 @@ export default function AboutUsBoxes({
                 flex items-start gap-4 text-left
               "
             >
-              {/* Icon */}
-              <div
-                className="
-                  relative flex h-12 w-12 items-center justify-center
-                  rounded-2xl bg-white/30 backdrop-blur-xl border border-white/60
-                  shadow-[0_12px_30px_rgba(31,38,135,0.12)]
-                  flex-shrink-0
-                "
-              >
-                <span className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/60 to-transparent" />
+              {/* Liquid-glass icon (same shape, frosted + rim + gloss + subtle caustics) */}
+              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl overflow-hidden flex-shrink-0">
+                {/* body: untinted, just frost/saturate what's behind */}
+                <span
+                  aria-hidden
+                  className="absolute inset-0 rounded-[inherit]"
+                  style={{
+                    background: "transparent",
+                    backdropFilter: "blur(14px) saturate(170%)",
+                    WebkitBackdropFilter: "blur(14px) saturate(170%)",
+                  }}
+                />
+                {/* single rim (no seams) */}
+                <span
+                  aria-hidden
+                  className="absolute inset-0 rounded-[inherit] pointer-events-none"
+                  style={{
+                    padding: 1,
+                    background: "linear-gradient(#ffffffCC,#ffffffCC)",
+                    WebkitMask:
+                      "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                    WebkitMaskComposite: "xor",
+                    maskComposite: "exclude",
+                    opacity: 0.85,
+                  }}
+                />
+                {/* moving caustics (very subtle, same as modules tone) */}
+                <span
+                  aria-hidden
+                  className="absolute inset-0 rounded-[inherit] pointer-events-none mix-blend-soft-light opacity-70 animate-[aurora_60s_linear_infinite]"
+                  style={{
+                    backgroundImage: [
+                      "radial-gradient(55% 45% at 25% 25%, rgba(255,255,255,0.45), transparent 65%)",
+                      "radial-gradient(45% 35% at 70% 70%, rgba(130,195,236,0.30), transparent 65%)",
+                    ].join(","),
+                    backgroundSize: "180% 180%, 200% 200%",
+                    backgroundPosition: "0% 50%, 100% 50%",
+                  }}
+                />
+                {/* top gloss */}
+                <span
+                  aria-hidden
+                  className="absolute inset-0 rounded-[inherit] pointer-events-none"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.06) 40%, rgba(255,255,255,0) 70%)",
+                    maskImage:
+                      "radial-gradient(160% 110% at 50% -20%, #000 30%, transparent 60%)",
+                    WebkitMaskImage:
+                      "radial-gradient(160% 110% at 50% -20%, #000 30%, transparent 60%)",
+                    opacity: 0.95,
+                  }}
+                />
+                {/* the icon glyph (kept neutral/dark for contrast) */}
                 <Icon className="relative h-6 w-6 text-black" strokeWidth={2} />
               </div>
 
-              {/* Copy (plain black, no bold) */}
+              {/* Copy */}
               <div className="min-w-0 text-left">
                 <h3 className="text-sm font-bold text-black mb-1.5">
                   {item.title}
@@ -147,10 +191,20 @@ export default function AboutUsBoxes({
                 </p>
               </div>
 
+              {/* card sheen */}
               <span
                 aria-hidden
                 className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-white/18 via-transparent to-transparent"
               />
+
+              {/* local keyframes (safe if not already in globals) */}
+              <style>{`
+                @keyframes aurora_60s_linear_infinite {
+                  0%   { background-position: 0% 50%, 100% 50%; }
+                  50%  { background-position: 100% 50%, 0% 50%; }
+                  100% { background-position: 0% 50%, 100% 50%; }
+                }
+              `}</style>
             </motion.article>
           );
         })}

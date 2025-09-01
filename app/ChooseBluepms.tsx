@@ -1,6 +1,8 @@
+/* app/ChooseBluepms.tsx */
 "use client";
 
 import { motion, type Variants } from "framer-motion";
+import Link from "next/link";
 import { Brain, Cloud, Layers, SmilePlus, type LucideIcon } from "lucide-react";
 
 // headline animation
@@ -67,7 +69,6 @@ export default function ChooseBluepms() {
   return (
     <section
       id="choose-bluepms"
-      // flex column + min-h-screen pushes footer to true bottom via mt-auto
       className="relative w-full max-w-6xl mx-auto px-6 pt-20 pb-10 min-h-screen flex flex-col"
       aria-labelledby="choose-bluepms-title"
     >
@@ -81,11 +82,7 @@ export default function ChooseBluepms() {
         viewport={{ once: true, amount: 0.6 }}
       >
         {headline.split(" ").map((w, i) => (
-          <motion.span
-            key={w + i}
-            variants={word}
-            className="inline-block mr-2"
-          >
+          <motion.span key={w + i} variants={word} className="inline-block mr-2">
             {w}
           </motion.span>
         ))}
@@ -94,24 +91,24 @@ export default function ChooseBluepms() {
       {/* Row list */}
       <div
         className="
-    relative mt-10 rounded-3xl overflow-hidden
-    border border-white/40 bg-white/10 backdrop-blur-2xl
-    shadow-[0_10px_40px_rgba(31,38,135,0.10)]
-    divide-y divide-white/20
-  "
+          relative mt-10 rounded-3xl overflow-hidden
+          border border-white/40 bg-white/10 backdrop-blur-2xl
+          shadow-[0_10px_40px_rgba(31,38,135,0.10)]
+          divide-y divide-white/20
+        "
       >
-        {/* animated 'caustics' overlay that lets the plasma feel like it's moving under glass */}
+        {/* animated 'caustics' overlay */}
         <div
           aria-hidden
           className="
-      pointer-events-none absolute inset-0 opacity-70 mix-blend-soft-light
-      animate-[aurora_60s_linear_infinite]
-      [background-image:radial-gradient(40%_30%_at_20%_20%,rgba(255,255,255,0.45),transparent_60%),radial-gradient(35%_25%_at_80%_60%,rgba(96,165,250,0.35),transparent_60%)]
-      [background-size:160%_160%,180%_180%]
-      [background-position:0%_50%,100%_50%]
-    "
+            pointer-events-none absolute inset-0 opacity-70 mix-blend-soft-light
+            animate-[aurora_60s_linear_infinite]
+            [background-image:radial-gradient(40%_30%_at_20%_20%,rgba(255,255,255,0.45),transparent_60%),radial-gradient(35%_25%_at_80%_60%,rgba(96,165,250,0.35),transparent_60%)]
+            [background-size:160%_160%,180%_180%]
+            [background-position:0%_50%,100%_50%]
+          "
         />
-        {/* keep your mapped rows below exactly as-is */}
+        {/* rows */}
         {rows.map((r, i) => {
           const Icon = r.icon;
           const variants = i % 2 === 0 ? rowLeft : rowRight;
@@ -122,21 +119,17 @@ export default function ChooseBluepms() {
               initial="hidden"
               whileInView="show"
               viewport={{ once: true, amount: 0.35 }}
-              className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6 px-5 md:px-7 py-6
-                   bg-white/5" // a hint of fill so dividers read nicely
+              className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6 px-5 md:px-7 py-6 bg-white/5"
             >
               <div className="flex items-center gap-4 min-w-0">
-                {/* icon capsule → glassy too */}
+                {/* icon capsule */}
                 <div
                   className="relative flex h-12 w-12 items-center justify-center rounded-2xl
-                          bg-white/30 backdrop-blur-xl border border-white/60
-                          shadow-[0_12px_30px_rgba(31,38,135,0.12)]"
+                             bg-white/30 backdrop-blur-xl border border-white/60
+                             shadow-[0_12px_30px_rgba(31,38,135,0.12)]"
                 >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/60 to-transparent" />
-                  <Icon
-                    className="relative h-6 w-6 text-blue-600"
-                    strokeWidth={2}
-                  />
+                  <Icon className="relative h-6 w-6 text-blue-600" strokeWidth={2} />
                 </div>
                 <div className="text-xl font-semibold text-gray-900 truncate">
                   {r.title}
@@ -151,68 +144,79 @@ export default function ChooseBluepms() {
         })}
       </div>
 
-      {/* Footer at the true bottom via mt-auto */}
+      {/* Footer pill */}
       <footer className="mt-auto pt-10 flex justify-center">
-        {/* Connected liquid-glass pills (segmented chip) */}
+        {/* Seamless, untinted liquid-glass pill (no frost) */}
         <nav
           aria-label="Footer"
-          className="
-    relative inline-flex items-center overflow-hidden rounded-full
-    border border-white/40 bg-white/10 backdrop-blur-2xl
-    shadow-[0_8px_28px_rgba(31,38,135,0.15)]
-    text-sm text-gray-900 whitespace-nowrap
-  "
+          className="relative inline-flex items-center px-2 py-1 rounded-full text-sm text-gray-900"
         >
-          {/* same liquid-glass caustics as rows */}
+          {/* 1) Transparent glass body */}
           <span
             aria-hidden
-            className="
-      pointer-events-none absolute inset-0 opacity-70 mix-blend-soft-light
-      animate-[aurora_60s_linear_infinite]
-      [background-image:radial-gradient(40%_30%_at_20%_20%,rgba(255,255,255,0.45),transparent_60%),radial-gradient(35%_25%_at_80%_60%,rgba(96,165,250,0.35),transparent_60%)]
-      [background-size:160%_160%,180%_180%]
-      [background-position:0%_50%,100%_50%]
-    "
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: "rgba(255,255,255,0.03)",
+            }}
           />
-
-          {/* optional subtle gloss */}
+          {/* 2) Single continuous rim */}
           <span
             aria-hidden
-            className="
-      pointer-events-none absolute inset-0 rounded-[inherit]
-      bg-gradient-to-b from-white/40 via-transparent to-transparent
-      [mask-image:radial-gradient(140%_80%_at_50%_-20%,#000_25%,transparent_60%)]
-      opacity-60
-    "
+            className="absolute inset-0 rounded-[inherit] pointer-events-none"
+            style={{
+              padding: 1,
+              background: "linear-gradient(#ffffffAA,#ffffffAA)",
+              WebkitMask:
+                "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+              WebkitMaskComposite: "xor",
+              maskComposite: "exclude",
+              boxShadow:
+                "inset 0 1px 2px rgba(255,255,255,0.45), 0 8px 24px rgba(12,18,28,0.20)",
+            }}
+          />
+          {/* 3) Gloss layer */}
+          <span
+            aria-hidden
+            className="absolute inset-0 rounded-[inherit] pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0) 70%)",
+              maskImage:
+                "radial-gradient(140% 90% at 50% -10%, #000 20%, transparent 60%)",
+              WebkitMaskImage:
+                "radial-gradient(140% 90% at 50% -10%, #000 20%, transparent 60%)",
+              opacity: 0.3,
+            }}
           />
 
-          {/* single continuous pill — no per-item backgrounds, no dividers */}
-          <span className="px-4 py-2">
-            © 2025 <span className="font-semibold">BLUEPMS</span>
-          </span>
+          {/* 4) Content */}
+          <div className="relative z-10 flex items-center gap-0 select-none">
+            <span className="px-4 py-2">
+              © 2025 <span className="font-semibold">BLUEPMS</span>
+            </span>
 
-          <a
-            href="#contact"
-            className="px-4 py-2 hover:bg-white/10 transition-colors"
-          >
-            All rights reserved
-          </a>
+            <a
+              href="#rights"
+              className="px-4 py-2 outline-none focus-visible:ring-2 focus-visible:ring-white/70 transition-colors hover:text-gray-950"
+            >
+              All rights reserved
+            </a>
 
-          <a
-            href="https://wa.me/14258940847?text=Hi!%20I'm%20interested%20in%20BLUEPMS."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2 hover:bg-white/10 transition-colors"
-          >
-            Contact Us
-          </a>
+            {/* CHANGED: route to /contact */}
+            <Link
+              href="/contact"
+              className="px-4 py-2 outline-none focus-visible:ring-2 focus-visible:ring-white/70 transition-colors hover:text-gray-950"
+            >
+              Contact Us
+            </Link>
 
-          <a
-            href="#privacy"
-            className="px-4 py-2 hover:bg-white/10 transition-colors"
-          >
-            Privacy Policy
-          </a>
+            <a
+              href="#privacy"
+              className="px-4 py-2 outline-none focus-visible:ring-2 focus-visible:ring-white/70 transition-colors hover:text-gray-950"
+            >
+              Privacy Policy
+            </a>
+          </div>
         </nav>
       </footer>
     </section>
