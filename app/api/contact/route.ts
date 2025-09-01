@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       port,
       secure: port === 465,     // 465 TLS, 587 STARTTLS
       auth: { user, pass },
-      requireTLS: port === 587, // for Gmail
+      requireTLS: port === 587, 
     });
 
     const subject = `BLUEPMS Callback Request – ${name}`;

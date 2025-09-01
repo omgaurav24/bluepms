@@ -105,7 +105,7 @@ export default function ChooseBluepms() {
             animate-[aurora_60s_linear_infinite]
             [background-image:radial-gradient(40%_30%_at_20%_20%,rgba(255,255,255,0.45),transparent_60%),radial-gradient(35%_25%_at_80%_60%,rgba(96,165,250,0.35),transparent_60%)]
             [background-size:160%_160%,180%_180%]
-            [background-position:0%_50%,100%_50%]
+            [background-position:0%_50%,100%_50%] 
           "
         />
         {/* rows */}
