@@ -12,6 +12,7 @@ import ComprehensiveModules from "@/app/ComprehensiveModules";
 import ChooseBluepms from "./ChooseBluepms";
 import AboutUsBoxes from "@/app/AboutUs";
 
+
 export default function Home() {
   const [ctaShown, setCtaShown] = useState(false);
   const router = useRouter();
@@ -27,17 +28,24 @@ export default function Home() {
       <section className="h-screen snap-start snap-always flex flex-col items-center justify-center text-center px-6">
         <div className="w-full flex flex-col items-center transform-gpu -translate-y-12 md:-translate-y-20 lg:-translate-y-24">
           <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="text-[clamp(3rem,8vw,6rem)] font-extrabold tracking-tight relative"
-          >
-            {/* Base text in black */}
-            <span className="absolute inset-0 text-[#0A192F] select-none">BLUEPMS</span>
+  initial={{ opacity: 0, y: 24 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6, ease: "easeOut" }}
+  className="text-[clamp(3rem,8vw,6rem)] font-extrabold tracking-tight relative"
+>
+  {/* Gradient base (dark top-to-bottom, slightly lighter start) */}
+  <span
+    className="absolute inset-0 select-none
+      bg-gradient-to-b from-[#1B5EC8] via-[#0D47A1] to-[#000814]
+      bg-clip-text text-transparent
+      [text-shadow:0_1px_2px_rgba(0,0,0,0.15)]"
+  >
+    BLUEPMS
+  </span>
 
-            {/* Shiny overlay */}
-            <ShinyText text="BLUEPMS" speed={4} className="relative" />
-          </motion.h1>
+  {/* Shiny overlay (uses your component) */}
+  <ShinyText text="BLUEPMS" speed={4} className="relative" />
+</motion.h1>
 
           <motion.p
             initial={{ opacity: 0 }}

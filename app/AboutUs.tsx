@@ -178,7 +178,7 @@ export default function AboutUsBoxes({
                   }}
                 />
                 {/* the icon glyph (kept neutral/dark for contrast) */}
-                <Icon className="relative h-6 w-6 text-black" strokeWidth={2} />
+                <Icon className="relative h-6 w-6 text-blue-700" strokeWidth={2} />
               </div>
 
               {/* Copy */}
